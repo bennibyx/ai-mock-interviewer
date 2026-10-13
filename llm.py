@@ -17,12 +17,14 @@ client = genai.Client(api_key=api_key)
 RETRYABLE = (429, 500, 503)  # temporary errors worth retrying
 
 
-def ask(prompt, system=None, temperature=None, retries=4):
-    """Send a prompt with an optional system prompt and temperature. Returns text."""
-    config = types.GenerateContentConfig(
-        system_instruction=system,
-        temperature=temperature,
-    )
+def ask(prompt, system=None, temperature=None, schema=None, retries=4):
+    """Send a prompt. If schema (a Pydantic class) is given, request JSON in that shape."""
+    options = {"system_instruction": system, "temperature": temperature}
+    if schema is not None:
+        options["response_mime_type"] = "application/json"
+        options["response_schema"] = schema
+    config = types.GenerateContentConfig(**options)
+
     for attempt in range(retries):
         try:
             response = client.models.generate_content(
