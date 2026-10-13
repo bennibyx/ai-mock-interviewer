@@ -37,4 +37,4 @@ def ask(prompt, system=None, temperature=None, schema=None, retries=4):
             wait = 2 ** attempt
             print(f"Got {e.code}. Retry {attempt + 1}/{retries} in {wait}s...")
             time.sleep(wait)
-    raise SystemExit("Still unavailable. Try again later.")
+    raise RuntimeError("LLM unavailable after retries")
